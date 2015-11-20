@@ -1,0 +1,2 @@
+# NotQuiteC
+Facilitating modern C
