@@ -175,6 +175,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define INTERFACE_TYPE( interface )	\
 	struct CAT2( interface, __struct )
 
+/** Forward declaration of an interface object. Note: type is not complete!
+ *
+ * @param interface to forward declare.
+ */
+#define INTERFACE_DECLARE( interface )	\
+	typedef INTERFACE_TYPE( interface ) interface;
+
 /** Creates an interface type, and an interface vtable struct.
  *
  * TODO: consider typedef function pointers of each method type?
@@ -183,7 +190,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *   property xmacro.
  */
 #define INTERFACE_DEFINE( interface )	\
-	typedef INTERFACE_TYPE( interface ) interface;	\
+	INTERFACE_DECLARE( interface )	\
 	INTERFACE_TYPE( interface ) {	\
 		const struct INTERFACE_VTABLE_NAME( interface ) {	\
 			INTERFACE_VTABLE_XMACRO( interface )( EXPAND_VTABLE_AS_POINTERS, interface )	\
