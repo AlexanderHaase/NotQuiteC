@@ -30,6 +30,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+#pragma once
+#include "PreprocessorUtil.h"
+
 /*
  * Helper macros for quickly standing up objects.
  *
@@ -41,19 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * to allow for quickly building up subclasses.
  */
 
-#define DEFER( ... ) __VA_ARGS__
-#define CAT2_IMPL( _a_, _b_ ) _a_ ## _b_
-#define CAT2( _a_, _b_ ) CAT2_IMPL( _a_, _b_ )
-#define CAT3_IMPL( _a_, _b_, _c_ ) _a_ ## _b_ ## _c_
-#define CAT3( _a_, _b_, _c_ ) CAT3_IMPL( _a_, _b_, _c_ ) 
-#define CAT4_IMPL( _a_, _b_, _c_, _d_ ) _a_ ## _b_ ## _c_ ## _d_
-#define CAT4( _a_, _b_, _c_, _d_ ) CAT4_IMPL( _a_, _b_, _c_, _d_ )
-#define CAT5_IMPL( _a_, _b_, _c_, _d_, _e_ ) _a_ ## _b_ ## _c_ ## _d_ ## _e_
-#define CAT5( _a_, _b_, _c_, _d_, _e_ ) CAT5_IMPL( _a_, _b_, _c_, _d_, _e_ )
 
-#ifndef restrict
-#define restrict __restrict
-#endif
 
 /** Interfaces
  *
@@ -71,11 +62,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *    provide a signature macro. The macro must adher to naming conventions:
  *
  *    #define MyInterface__signature__myMethod( name ) \
- *        returnType ( name )( INTERFACE_TYPE( MyInterface ) *, ... )
- *
- *    Sadly, INTERFACE_TYPE() is required for method and property references to
- *    the interface--can't forward declare the typedef.
- *
+ *        returnType ( name )( MyInterface *, ... )
+
  *    Conforming to this convention allows INTERFACE_METHOD_SIGNATURE() to 
  *    locate the method signature, and INTERFACE_METHOD_IMPLEMENT() to generate
  *    the function signature.
@@ -157,8 +145,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @param type variable type.
  * @param name variable name.
+ * @param default unused. Surpress --pedantic errors.
+ * @param interface unused. Surpress --pedantic errors.
  */
-#define EXPAND_PROPERTY_AS_DECLARATION( type, name, ... )	type name;
+#define EXPAND_PROPERTY_AS_DECLARATION( type, name, default, interface )	type name;
 
 /** Converts an interface vtable xmacro and method signatures to function pointers.
  *
@@ -193,12 +183,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *   property xmacro.
  */
 #define INTERFACE_DEFINE( interface )	\
-	typedef INTERFACE_TYPE( interface ) {	\
+	typedef INTERFACE_TYPE( interface ) interface;	\
+	INTERFACE_TYPE( interface ) {	\
 		const struct INTERFACE_VTABLE_NAME( interface ) {	\
 			INTERFACE_VTABLE_XMACRO( interface )( EXPAND_VTABLE_AS_POINTERS, interface )	\
 		} * restrict vtable;	\
-		INTERFACE_PROPERTY_XMACRO( interface )( EXPAND_PROPERTY_AS_DECLARATION )	\
-	} interface
+		INTERFACE_PROPERTY_XMACRO( interface )( EXPAND_PROPERTY_AS_DECLARATION, interface )	\
+	}
 
 
 /** Interface implementation
@@ -290,7 +281,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define INTERFACE_IMPLEMENT( interface, implementation )	\
 	INTERFACE_VTABLE_XMACRO( interface )( EXPAND_VTABLE_AS_DECLARATIONS, interface, implementation )	\
 	INTERFACE_VTABLE_IMPLEMENT( Class0, Subclass0 );	\
-	void CAT3( interface, InitAs, implementation )( INTERFACE_TYPE( interface ) * const restrict instance )	\
+	void CAT3( interface, InitAs, implementation )( interface * const restrict instance )	\
 	{	\
 		instance->vtable = &INTERFACE_VTABLE_NAME( implementation );	\
 	}
@@ -302,53 +293,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define INTERFACE_CAST( interface, object )	\
 	&(object)->CAT2( interface, __instance )
 
-/** And finally, an example! */
-
-/** First, we supply a method signature.
- *
- * By convention, we stick the doxygen for the signature here, rather than the
- * doxygen for the macro. Signature macros are pretty boring; signatures are 
- * not.
- *
- * @param self pointer to interface instance.
- * @return some value.
- */
-#define Class0__signature_method0( name ) \
-	int (name)( INTERFACE_TYPE( Class0 ) * self )
-
-/* Second, we supply a vtable. Note, all the names must match... */
-#define Class0__vtable_xmacro( EXPAND, ... )	\
-	DEFER( EXPAND( method0, ## __VA_ARGS__ ) )
-
-/* Third, we properties. */
-#define Class0__property_xmacro( EXPAND, ... )	\
-	DEFER( EXPAND( int, property0, 0, ## __VA_ARGS__ ) )
-
-/* Now we can define the interface */
-INTERFACE_DEFINE( Class0 );
-
-/* And forward declare an implementation */
-INTERFACE_IMPLEMENT( Class0, Subclass0 );
-
-/* Why not implement a method? */
-INTERFACE_METHOD_IMPLEMENT( Class0, method0, Subcalss0 ) 
-{
-	return self->property0++;
-}
-
-/* setup an interface instance. */
-struct Subclass0Private {
-	INTERFACE_INHERIT( Class0 );
-	void * privateData;
-	int someCounter;
-};
-
-void Subclass0Init( struct Subclass0Private * object )
-{
-	Class0InitAsSubclass0( INTERFACE_CAST( Class0, object ) );
-	object->privateData = 0;
-	object->someCounter = 1;
-}
-
-
+#define INVOKE( object, method, ... )	\
+	(object)->vtable.method( (object), ## __VA_ARGS__ ) )
 
