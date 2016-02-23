@@ -62,7 +62,7 @@ INTERFACE_DEFINE( Class0 );
 INTERFACE_IMPLEMENT( Class0, Subclass0 )
 
 /* Why not implement a method? */
-INTERFACE_METHOD_IMPLEMENT( Class0, method0, Subcalss0 ) 
+INTERFACE_METHOD_IMPLEMENT( Class0, method0, Subclass0 ) 
 {
 	return self->property0++;
 }
@@ -79,11 +79,7 @@ void Subclass0Init( struct Subclass0Private * object )
 	Class0InitAsSubclass0( INTERFACE_CAST( Class0, object ) );
 	object->privateData = 0;
 	object->someCounter = 1;
+	INVOKE( INTERFACE_CAST( Class0, object ), method0 );
 }
 
-typedef struct A_thing A;
 
-struct A {
-
-	int b;
-};

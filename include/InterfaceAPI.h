@@ -294,5 +294,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	&(object)->CAT2( interface, __instance )
 
 #define INVOKE( object, method, ... )	\
-	(object)->vtable.method( (object), ## __VA_ARGS__ ) )
+	(object)->vtable->method( object, ## __VA_ARGS__ )
 
