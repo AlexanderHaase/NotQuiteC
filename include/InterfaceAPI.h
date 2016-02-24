@@ -294,7 +294,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #define INTERFACE_IMPLEMENT( interface, implementation )	\
 	INTERFACE_VTABLE_XMACRO( interface )( EXPAND_VTABLE_AS_DECLARATIONS, interface, implementation )	\
-	INTERFACE_VTABLE_IMPLEMENT( Class0, Subclass0 );	\
+	INTERFACE_VTABLE_IMPLEMENT( interface, implementation );	\
 	void CAT3( interface, InitAs, implementation )( interface * const restrict instance )	\
 	{	\
 		instance->vtable = &INTERFACE_VTABLE_NAME( implementation );	\
@@ -305,7 +305,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	interface CAT2( interface, __instance )
 
 #define INTERFACE_CAST( interface, object )	\
-	&(object)->CAT2( interface, __instance )
+	(&(object)->CAT2( interface, __instance ))
+
+#define INTERFACE_CONTAINER( interface, type, ptr )	\
+	container_of( ptr, type, CAT2( interface, __instance ) )
 
 #define INVOKE( object, method, ... )	\
 	(object)->vtable->method( object, ## __VA_ARGS__ )

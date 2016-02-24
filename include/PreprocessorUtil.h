@@ -44,6 +44,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CAST_TYPE( type, symbol, ptr )	\
 	type symbol = (type) ptr
 
+
+#define container_of( ptr, type, member )	\
+	(( (type*) ((size_t)ptr - offsetof( type, member ) ) ))
+
 #ifndef restrict
 #define restrict __restrict
 #endif
