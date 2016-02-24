@@ -37,13 +37,13 @@
 
 
 //http://stackoverflow.com/questions/12042433/how-to-disable-c4127-for-do-whilefalse
-#define MULTI_LINE_MACRO_BEGIN do
+#define MULTI_LINE_MACRO_BEGIN do {
 
 #ifdef _WIN32
 #define MULTI_LINE_MACRO_END \
     __pragma(warning(push)) \
     __pragma(warning(disable:4127)) \
-    while(0) \
+	} while(0) \
     __pragma(warning(pop))
 #else
 #define MULTI_LINE_MACRO_END } while(0)

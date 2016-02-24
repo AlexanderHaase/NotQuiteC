@@ -310,6 +310,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define INTERFACE_CONTAINER( interface, type, ptr )	\
 	container_of( ptr, type, CAT2( interface, __instance ) )
 
+#define INTERFACE_IS_INSTANCE( implementation, object )	\
+	(( &INTERFACE_VTABLE_NAME( implementation ) == (object)->vtable ))
+
 #define INVOKE( object, method, ... )	\
 	(object)->vtable->method( object, ## __VA_ARGS__ )
+
+
+#define INTERFACE_VTABLE_INITIALIZER( implementation )	\
+		{ .vtable = &INTERFACE_VTABLE_NAME( implementation ) }
 

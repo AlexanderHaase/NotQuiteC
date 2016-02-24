@@ -32,6 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 #define DEFER( ... ) __VA_ARGS__
+#define STR_IMPL( value ) #value
+#define STR( value )	STR_IMPL( value )
 #define CAT2_IMPL( _a_, _b_ ) _a_ ## _b_
 #define CAT2( _a_, _b_ ) CAT2_IMPL( _a_, _b_ )
 #define CAT3_IMPL( _a_, _b_, _c_ ) _a_ ## _b_ ## _c_
