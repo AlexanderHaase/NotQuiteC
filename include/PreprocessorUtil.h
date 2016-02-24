@@ -41,6 +41,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CAT5_IMPL( _a_, _b_, _c_, _d_, _e_ ) _a_ ## _b_ ## _c_ ## _d_ ## _e_
 #define CAT5( _a_, _b_, _c_, _d_, _e_ ) CAT5_IMPL( _a_, _b_, _c_, _d_, _e_ )
 
+#define CAST_TYPE( type, symbol, ptr )	\
+	type symbol = (type) ptr
+
 #ifndef restrict
 #define restrict __restrict
 #endif

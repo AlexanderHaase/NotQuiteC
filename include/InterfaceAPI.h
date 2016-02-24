@@ -168,19 +168,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define EXPAND_VTABLE_AS_DECLARATIONS( method, interface, implementation )	\
 	INTERFACE_METHOD_SIGNATURE( interface, method )( INTERFACE_METHOD_NAME( implementation, method ) );
 
+/** Sometimes we'll need a struct name inside the interface declaration.
+ *
+ * @param interface to generate struct name for.
+ */
+#define INTERFACE_STRUCT( interface )	\
+	CAT2( interface, __struct )
+
 /** Sometimes we'll need a type name inside the interface declaration.
  *
- * @param interface to generate typename for.
+ * @param interface to generate type name for.
  */
 #define INTERFACE_TYPE( interface )	\
-	struct CAT2( interface, __struct )
+	struct INTERFACE_STRUCT( interface )
 
 /** Forward declaration of an interface object. Note: type is not complete!
  *
  * @param interface to forward declare.
  */
 #define INTERFACE_DECLARE( interface )	\
-	typedef INTERFACE_TYPE( interface ) interface;
+	typedef INTERFACE_TYPE( interface ) interface
 
 /** Creates an interface type, and an interface vtable struct.
  *
@@ -190,7 +197,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *   property xmacro.
  */
 #define INTERFACE_DEFINE( interface )	\
-	INTERFACE_DECLARE( interface )	\
+	INTERFACE_DECLARE( interface );	\
 	INTERFACE_TYPE( interface ) {	\
 		const struct INTERFACE_VTABLE_NAME( interface ) {	\
 			INTERFACE_VTABLE_XMACRO( interface )( EXPAND_VTABLE_AS_POINTERS, interface )	\
