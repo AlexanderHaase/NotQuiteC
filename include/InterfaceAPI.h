@@ -1,4 +1,4 @@
-/* 
+/******************************************************************************
 
 Copyright (c) 2016, Alexander Haase
 All rights reserved.
@@ -28,7 +28,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/
+******************************************************************************/
 
 #pragma once
 #include "PreprocessorUtil.h"
@@ -295,4 +295,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define INVOKE( object, method, ... )	\
 	(object)->vtable->method( object, ## __VA_ARGS__ )
+
+#define INTERFACE_INIT_AS( interface, object, implementation )	\
+	INTERFACE_CAST( object )->vtable = &INTERFACE_VTABLE_NAME( implementation )
+
+#define CALL( interface, object, method, ... )	\
+	INTERFACE_METHOD_NAME( interface, method )( object, ##__VA_ARGS__ )
 

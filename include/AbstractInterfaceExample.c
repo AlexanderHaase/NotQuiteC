@@ -83,3 +83,8 @@ void Subclass0Init( struct Subclass0Private * object )
 }
 
 
+int main( void ) {
+	return 0;
+}
+
+
