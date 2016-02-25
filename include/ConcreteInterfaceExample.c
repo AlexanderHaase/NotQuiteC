@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "InterfaceAPI.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 /*
  * Let's create a basic polymorphic interface. Say, we want an abstract base 
@@ -415,30 +416,55 @@ float INTERFACE_METHOD_NAME( Animal, compactness )( Animal * self )
 	return self->surfaceArea / self->volume;
 }
 
+
+// Statically setup a cat...
+Cat cat = {
+	.foodEatenToday = 100,	// Round number!
+	.vetVisitsToday = 2,	// Poor {kitty,wallet}.
+
+	.INTERFACE_INSTANCE( Animal ) = 
+	{
+		.mass =		7.3,	// A little on the heavy size.
+		.volume =	.1,	// A shot in the dark. Cubic meters are big!
+		.surfaceArea = 	1,	// Another guess...getting creeeepy.
+		.name = "Catattack",	// Portmanteau of cat and heart attack.
+
+		INTERFACE_VTABLE_INITIALIZER( Cat ),	// Initialize vtable.
+	},
+};
+
 /* Now we're all set to work with cats... */
 int main( void )
 {
 	char text[ 100 ];
 
-	// Setup a cat...
-	Cat cat;
-	cat.foodEatenToday = 100;	// Round number!
-	cat.vetVisitsToday = 2;		// Poor {kitty,wallet}.
+	// Dynamically setup a cat.
+	Cat * stray = malloc( sizeof( Cat ) );
 
-	INTERFACE_INIT_AS( Animal, Cat, &cat );
+	INTERFACE_INIT_AS( Animal, Cat, stray );
 
-	Animal * animal = INTERFACE_CAST( Animal, &cat );
+	stray->foodEatenToday = 0;	// That's no good:(
+	stray->vetVisitsToday = 0;	// Likely to change!
+	stray->INTERFACE_INSTANCE( Animal ).mass =	2.4;	// Skinny kitty!
+	stray->INTERFACE_INSTANCE( Animal ).volume =	.03;	// So skin and bones. 
+	stray->INTERFACE_INSTANCE( Animal ).surfaceArea = .75; 	// Maybe more skin than bones?
+	stray->INTERFACE_INSTANCE( Animal ).name = "Luggage";	// Don't ask.
 
-	animal->mass = 7.3;	// A little on the heavy size.
-	animal->volume = .1;	// A shot in the dark. Cubic meters are big!
-	animal->surfaceArea = 1;	// Another guess...getting creeeepy.
-	animal->name = "Catattack";	// Portmanteau of cat and heart attack.
+	// Treat both cats like animals
+	Animal * animals[ 2 ] = 
+	{ 
+		INTERFACE_CAST( Animal, &cat ),
+		INTERFACE_CAST( Animal, stray ),
+	};
 
-	// Work with the cat...
-	INVOKE( animal, speak, text, 100 );
-	printf( "%s (compactness: %02f)\n", text, CALL( Animal, compactness, animal ) );
-
-	// Prints: "Mrow!?!?!?!?! (compactness: 10.000000)\n"
+	size_t index;
+	// Work with the animals...
+	for( index = 0; index < 2; index++ )
+	{
+		Animal * animal = animals[ index ];
+		INVOKE( animal, speak, text, 100 );
+		printf( "%s says: '%s' (compactness: %.02f)\n", animal->name, text, CALL( Animal, compactness, animal ) );
+	}
 
 	return 0;
 }

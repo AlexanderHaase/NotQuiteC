@@ -296,6 +296,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	INTERFACE_VTABLE_XMACRO( interface )( EXPAND_VTABLE_AS_DECLARATIONS, interface, implementation )	\
 	INTERFACE_VTABLE_IMPLEMENT( interface, implementation )
 
+/** Name for an inherited interface within a containing object. */
+#define INTERFACE_INSTANCE( interface )	\
+	CAT2( interface, __instance )
 
 /** Creates an instance of the interface in the calling scope.
  *
@@ -305,7 +308,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * @param interface to inherit.
  */
 #define INTERFACE_INHERIT( interface )	\
-	interface CAT2( interface, __instance )
+	interface INTERFACE_INSTANCE( interface )
 
 /** Casts an object to an interface pointer.
  *
@@ -316,7 +319,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * @return interface pointer.
  */
 #define INTERFACE_CAST( interface, object )	\
-	(&(object)->CAT2( interface, __instance ))
+	(&(object)->INTERFACE_INSTANCE( interface ))
 
 /** Retrieves the containing object of an interface.
  *
