@@ -319,6 +319,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define INTERFACE_INIT_AS( interface, object, implementation )	\
 	INTERFACE_CAST( interface, object )->vtable = &INTERFACE_VTABLE_NAME( implementation )
 
+#define INTERFACE_VTABLE_INITIALIZER( implementation )	\
+		.vtable = &INTERFACE_VTABLE_NAME( implementation )
+
 #define CALL( interface, object, method, ... )	\
 	INTERFACE_METHOD_NAME( interface, method )( object, ##__VA_ARGS__ )
 
