@@ -32,6 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 #define DEFER( ... ) __VA_ARGS__
+#define STR_IMPL( value ) #value
+#define STR( value )	STR_IMPL( value )
 #define CAT2_IMPL( _a_, _b_ ) _a_ ## _b_
 #define CAT2( _a_, _b_ ) CAT2_IMPL( _a_, _b_ )
 #define CAT3_IMPL( _a_, _b_, _c_ ) _a_ ## _b_ ## _c_
@@ -40,6 +42,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CAT4( _a_, _b_, _c_, _d_ ) CAT4_IMPL( _a_, _b_, _c_, _d_ )
 #define CAT5_IMPL( _a_, _b_, _c_, _d_, _e_ ) _a_ ## _b_ ## _c_ ## _d_ ## _e_
 #define CAT5( _a_, _b_, _c_, _d_, _e_ ) CAT5_IMPL( _a_, _b_, _c_, _d_, _e_ )
+
+#define CAST_TYPE( type, symbol, ptr )	\
+	type symbol = (type) ptr
+
+
+#define container_of( ptr, type, member )	\
+	(( (type*) ((size_t)ptr - offsetof( type, member ) ) ))
 
 #ifndef restrict
 #define restrict __restrict

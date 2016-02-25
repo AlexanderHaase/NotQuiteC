@@ -168,12 +168,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define EXPAND_VTABLE_AS_DECLARATIONS( method, interface, implementation )	\
 	INTERFACE_METHOD_SIGNATURE( interface, method )( INTERFACE_METHOD_NAME( implementation, method ) );
 
+/** Sometimes we'll need a struct name inside the interface declaration.
+ *
+ * @param interface to generate struct name for.
+ */
+#define INTERFACE_STRUCT( interface )	\
+	CAT2( interface, __struct )
+
 /** Sometimes we'll need a type name inside the interface declaration.
  *
- * @param interface to generate typename for.
+ * @param interface to generate type name for.
  */
 #define INTERFACE_TYPE( interface )	\
-	struct CAT2( interface, __struct )
+	struct INTERFACE_STRUCT( interface )
+
+/** Forward declaration of an interface object. Note: type is not complete!
+ *
+ * @param interface to forward declare.
+ */
+#define INTERFACE_DECLARE( interface )	\
+	typedef INTERFACE_TYPE( interface ) interface
 
 /** Creates an interface type, and an interface vtable struct.
  *
@@ -183,7 +197,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *   property xmacro.
  */
 #define INTERFACE_DEFINE( interface )	\
-	typedef INTERFACE_TYPE( interface ) interface;	\
+	INTERFACE_DECLARE( interface );	\
 	INTERFACE_TYPE( interface ) {	\
 		const struct INTERFACE_VTABLE_NAME( interface ) {	\
 			INTERFACE_VTABLE_XMACRO( interface )( EXPAND_VTABLE_AS_POINTERS, interface )	\
@@ -280,7 +294,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #define INTERFACE_IMPLEMENT( interface, implementation )	\
 	INTERFACE_VTABLE_XMACRO( interface )( EXPAND_VTABLE_AS_DECLARATIONS, interface, implementation )	\
-	INTERFACE_VTABLE_IMPLEMENT( Class0, Subclass0 );	\
+	INTERFACE_VTABLE_IMPLEMENT( interface, implementation );	\
 	void CAT3( interface, InitAs, implementation )( interface * const restrict instance )	\
 	{	\
 		instance->vtable = &INTERFACE_VTABLE_NAME( implementation );	\
@@ -291,7 +305,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	interface CAT2( interface, __instance )
 
 #define INTERFACE_CAST( interface, object )	\
-	&(object)->CAT2( interface, __instance )
+	(&(object)->CAT2( interface, __instance ))
+
+#define INTERFACE_CONTAINER( interface, type, ptr )	\
+	container_of( ptr, type, CAT2( interface, __instance ) )
+
+#define INTERFACE_IS_INSTANCE( implementation, object )	\
+	(( &INTERFACE_VTABLE_NAME( implementation ) == (object)->vtable ))
 
 #define INVOKE( object, method, ... )	\
 	(object)->vtable->method( object, ## __VA_ARGS__ )
