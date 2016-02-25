@@ -47,8 +47,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	type symbol = (type) ptr
 
 
+#ifndef container_of
 #define container_of( ptr, type, member )	\
 	(( (type*) ((size_t)ptr - offsetof( type, member ) ) ))
+#endif /* container_of */
+
+#ifndef offsetof
+#define offsetof( type, member )	\
+	(( (size_t) &((type*)0)->member ))
+
+#endif /* offsetof */
 
 #ifndef restrict
 #define restrict __restrict
