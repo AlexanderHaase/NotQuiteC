@@ -228,7 +228,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * @param method to be implemented--lookup for signature.
  * @param implementation name of implementation.
  */
-#define INTERFACE_METHOD_IMPLEMENT( interface, method, implementation )	\
+#define INTERFACE_IMPLEMENT_METHOD( interface, implementation, method )	\
 	INTERFACE_METHOD_SIGNATURE( interface, method )( INTERFACE_METHOD_NAME( implementation, method ) )
 
 /** Macro for naming and defining the signature of a interface method 
@@ -244,7 +244,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * @param method to be implemented--lookup for signature.
  * @param implementation name of implementation.
  */
-#define INTERFACE_METHOD_IMPLEMENT_POINTER( interface, method, implementation ) \
+#define INTERFACE_IMPLEMENT_METHOD_POINTER( interface, implementation, method ) \
 	INTERFACE_METHOD_SIGNATURE( interface, method )( * const restrict INTERFACE_METHOD_NAME( implementation, method ) )
 
 /** Macro for naming and defining the signature of a interface method 
@@ -260,7 +260,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * @param implementation name of implementation.
  * @param source name of implementation to inherit.
  */
-#define INTERFACE_METHOD_IMPLEMENT_INHERIT( interface, method, implementation, source ) \
+#define INTERFACE_IMPLEMENT_METHOD_INHERIT( interface, implementation, method, source ) \
 	extern INTERFACE_METHOD_IMPLEMENT( interface, method, source );	\
 	INTERFACE_METHOD_IMPLEMENT_POINTER( interface, method, implementation ) = \
 		INTERFACE_METHOD_NAME( from, method );

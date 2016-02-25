@@ -164,7 +164,7 @@ size_t rawAnimal__subclass_catAnimal_speak( struct RawAnimal * animal, char * te
 	 */   	
 	const char * disposition;
 
-	if( animal->fiscalBurden( animal ) > 100000 )
+	if( animal->fiscalBurden( animal ) > 10000 )
 	{
 	 	disposition = "Mew:) Purrrrrrr....";
 	}
@@ -359,14 +359,14 @@ INTERFACE_IMPLEMENT( Animal, Cat );
  *
  * We only need supply an implementation of each virtual method.
  */
-INTERFACE_METHOD_IMPLEMENT( Animal, speak, Cat )
+INTERFACE_IMPLEMENT_METHOD( Animal, Cat, speak )
 {
 	// Arguments are per signature macro:
 	//	( Animal * self, const char * text, size_t capacity )
 	const char * disposition;
 
 	// calling virtual methods is easy
-	if( INVOKE( self, fiscalBurden ) > 100000 )
+	if( INVOKE( self, fiscalBurden ) > 1000 )
 	{
 	 	disposition = "Mew:) Purrrrrrr....";
 	}
@@ -392,7 +392,7 @@ typedef struct {
  *
  * Accessing private data is very straight forward.
  */
-INTERFACE_METHOD_IMPLEMENT( Animal, fiscalBurden, Cat )
+INTERFACE_IMPLEMENT_METHOD( Animal, Cat, fiscalBurden )
 {
 	// INTERFACE_API provides helpful container_of equivalent. 
 	Cat * cat = INTERFACE_CONTAINER( Animal, Cat, self );
@@ -425,7 +425,7 @@ int main( void )
 	cat.foodEatenToday = 100;	// Round number!
 	cat.vetVisitsToday = 2;		// Poor {kitty,wallet}.
 
-	INTERFACE_INIT_AS( Animal, Cat, &catCat );
+	INTERFACE_INIT_AS( Animal, Cat, &cat );
 
 	Animal * animal = INTERFACE_CAST( Animal, &cat );
 
