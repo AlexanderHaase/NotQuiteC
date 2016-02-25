@@ -352,7 +352,7 @@ INTERFACE_DEFINE( Animal );
  *
  * Subclassing is a breeze. Vtables, etc., are handled in one call.
  */
-INTERFACE_IMPLEMENT( Animal, Cat )
+INTERFACE_IMPLEMENT( Animal, Cat );
 
 
 /** Cat method speak().
@@ -425,7 +425,7 @@ int main( void )
 	cat.foodEatenToday = 100;	// Round number!
 	cat.vetVisitsToday = 2;		// Poor {kitty,wallet}.
 
-	INTERFACE_INIT_AS( Animal, &cat, Cat );
+	INTERFACE_INIT_AS( Animal, Cat, &catCat );
 
 	Animal * animal = INTERFACE_CAST( Animal, &cat );
 
@@ -436,7 +436,7 @@ int main( void )
 
 	// Work with the cat...
 	INVOKE( animal, speak, text, 100 );
-	printf( "%s (compactness: %02f)\n", text, CALL( Animal, animal, compactness ) );
+	printf( "%s (compactness: %02f)\n", text, CALL( Animal, compactness, animal ) );
 
 	// Prints: "Mrow!?!?!?!?! (compactness: 10.000000)\n"
 

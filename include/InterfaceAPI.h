@@ -294,34 +294,90 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #define INTERFACE_IMPLEMENT( interface, implementation )	\
 	INTERFACE_VTABLE_XMACRO( interface )( EXPAND_VTABLE_AS_DECLARATIONS, interface, implementation )	\
-	INTERFACE_VTABLE_IMPLEMENT( interface, implementation );	\
-	void CAT3( interface, InitAs, implementation )( interface * const restrict instance )	\
-	{	\
-		instance->vtable = &INTERFACE_VTABLE_NAME( implementation );	\
-	}
+	INTERFACE_VTABLE_IMPLEMENT( interface, implementation )
 
 
+/** Creates an instance of the interface in the calling scope.
+ *
+ * Name is auto-generated to simplify other macros and encourage
+ * implementing each interface no more than once per object scope.
+ *
+ * @param interface to inherit.
+ */
 #define INTERFACE_INHERIT( interface )	\
 	interface CAT2( interface, __instance )
 
+/** Casts an object to an interface pointer.
+ *
+ * Object must have a member defined by INTERFACE_INHERIT().
+ *
+ * @param interface to cast to.
+ * @param object to cast
+ * @return interface pointer.
+ */
 #define INTERFACE_CAST( interface, object )	\
 	(&(object)->CAT2( interface, __instance ))
 
+/** Retrieves the containing object of an interface.
+ *
+ * Object must have a member defined by INTERFACE_INHERIT(). No dynamic 
+ * type checking--see INTERFACE_IS_INSTANCE.
+ *
+ * @param interface being used.
+ * @param type of containing object.
+ * @param pointer interface instance pointer.
+ * @return pointer to containing object cast to specified type.
+ */
 #define INTERFACE_CONTAINER( interface, type, ptr )	\
 	container_of( ptr, type, CAT2( interface, __instance ) )
 
+
+/** Checks if an interface instance is a specific implementation.
+ *
+ * @param implementation to check.
+ * @param object interface instance to check.
+ * @return Boolean indication of match.
+ */
 #define INTERFACE_IS_INSTANCE( implementation, object )	\
 	(( &INTERFACE_VTABLE_NAME( implementation ) == (object)->vtable ))
 
+/** Calls an interface's virtual method with specified arguments.
+ *
+ * See method signature for arguments.
+ *
+ * @param object interface instance.
+ * @param method name of virtual method to invoke.
+ * @param __VA_ARGS__ method specific arguments.
+ * @return method specific result.
+ */
 #define INVOKE( object, method, ... )	\
 	(object)->vtable->method( object, ## __VA_ARGS__ )
 
-#define INTERFACE_INIT_AS( interface, object, implementation )	\
+
+/** Initializes an interface object's vtable. */
+#define INTERFACE_INIT_AS( interface, implementation, object )	\
 	INTERFACE_CAST( interface, object )->vtable = &INTERFACE_VTABLE_NAME( implementation )
 
+/** Creates a static initializer entry.
+ * Use inside brackets: 
+ * MyInterface myInstance = { INTERFACE_VTABLE_INITIALIZER( MyInterface ), ...}
+ */
 #define INTERFACE_VTABLE_INITIALIZER( implementation )	\
 		.vtable = &INTERFACE_VTABLE_NAME( implementation )
 
-#define CALL( interface, object, method, ... )	\
-	INTERFACE_METHOD_NAME( interface, method )( object, ##__VA_ARGS__ )
+/** Calls a concrete method defined in either interface or implementation 
+ * namespace.
+ *
+ * Method must have either been defined via INTERFACE_METHOD_IMPLEMENT() or
+ * INTERFACE_METHOD_NAME(). CALL is a static(compile time) call and ignores 
+ * vtable.
+ * 
+ * @param interface interface OR implementation namespace to use.
+ * @param method name of concrete or virtual method to invoke in that namespace.
+ * @param __VA_ARGS__ method specific arguments(likely includes an instance 
+ *   for 'self').
+ * @return method specific result.
+ */
+#define CALL( interface, method, ... )	\
+	INTERFACE_METHOD_NAME( interface, method )( __VA_ARGS__ )
 
