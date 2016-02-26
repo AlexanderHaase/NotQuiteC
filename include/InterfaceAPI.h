@@ -265,9 +265,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * @param source name of implementation to inherit.
  */
 #define INTERFACE_IMPLEMENT_METHOD_INHERIT( interface, implementation, method, source ) \
-	extern INTERFACE_METHOD_IMPLEMENT( interface, method, source );	\
-	INTERFACE_METHOD_IMPLEMENT_POINTER( interface, method, implementation ) = \
-		INTERFACE_METHOD_NAME( from, method );
+	extern INTERFACE_IMPLEMENT_METHOD( interface, source, method );	\
+	INTERFACE_IMPLEMENT_METHOD_POINTER( interface, method, implementation ) = \
+		INTERFACE_METHOD_NAME( source, method );
 
 /** Converts an interface xmacro to a vtable initializer for an implementation.
  *
