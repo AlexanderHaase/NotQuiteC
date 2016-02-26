@@ -1,4 +1,4 @@
-/* 
+/******************************************************************************
 
 Copyright (c) 2016, Alexander Haase
 All rights reserved.
@@ -28,12 +28,16 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/
+******************************************************************************/
 
 #include "InterfaceAPI.h"
+#include <stdlib.h>
+#include <stdio.h>
 
-
-/** And finally, an example! */
+/*
+ * This example assumes the reader is already on board with virtual methods
+ * and C. As such, it's more of a terse convention example.
+ */
 
 /** First, we supply a method signature.
  *
@@ -49,41 +53,92 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Second, we supply a vtable. Note, all the names must match... */
 #define Class0__vtable_xmacro( EXPAND, ... )	\
-	DEFER( EXPAND( method0, ## __VA_ARGS__ ) )
+	APPLY( EXPAND, method0, ## __VA_ARGS__ )
 
-/* Third, we properties. */
+/* Third, we supply properties. Again, names must match. */
 #define Class0__property_xmacro( EXPAND, ... )	\
-	DEFER( EXPAND( int, property0, 0, ## __VA_ARGS__ ) )
+	APPLY( EXPAND, int, property0, 0, ## __VA_ARGS__ )
 
-/* Now we can define the interface */
+/** Now we can define the interface.
+ *
+ * Virtual Methods:
+ *  - method0
+ *
+ * Properties:
+ *  - property0
+ *
+ * static Methods:
+ *  - method1
+ */
 INTERFACE_DEFINE( Class0 );
 
-/* And forward declare an implementation */
-INTERFACE_IMPLEMENT( Class0, Subclass0 )
-
-/* Why not implement a method? */
-INTERFACE_METHOD_IMPLEMENT( Class0, method0, Subclass0 ) 
+/* Setup static method in class0 namespace */
+const char * INTERFACE_METHOD_NAME( Class0, name )( void )
 {
-	return self->property0++;
+	return STR( Class0 );
 }
 
-/* setup an interface instance. */
-struct Subclass0Private {
-	INTERFACE_INHERIT( Class0 );
+/* And forward declare an implementation */
+INTERFACE_IMPLEMENT( Class0, Subclass0 );
+
+
+/* Setup an interface instance, complete with subclass properties.
+ *
+ * Note: The name of the container need not match the implementation. Doing so
+ * does help with readability though.
+ */
+typedef struct  {
+	INTERFACE_INHERIT( Class0 );	// Macro names instance per convention.
 	void * privateData;
 	int someCounter;
-};
+} Subclass0;
 
-void Subclass0Init( struct Subclass0Private * object )
-{
-	Class0InitAsSubclass0( INTERFACE_CAST( Class0, object ) );
-	object->privateData = 0;
-	object->someCounter = 1;
-	INVOKE( INTERFACE_CAST( Class0, object ), method0 );
+
+/* Why not implement a method? */
+INTERFACE_IMPLEMENT_METHOD( Class0, Subclass0, method0 ) 
+{	
+	// INTERFACE_CONTAINER(...) statically casts to the containing object.
+	return INTERFACE_CONTAINER( Class0, Subclass0, self )->someCounter + self->property0++;
 }
+
 
 
 int main( void ) {
+
+	/* setup a static instance */
+	Subclass0 instance0 = {
+		.INTERFACE_INSTANCE( Class0 ) =
+		{
+			.property0 = 0,
+			INTERFACE_VTABLE_INITIALIZER( Subclass0 ),
+		},
+		.privateData = NULL,
+		.someCounter = 1,
+	};
+
+	/* setup a dynamic instance */
+	Subclass0 * instance1 = malloc( sizeof( Subclass0 ) );
+	
+	INTERFACE_INIT_AS( Class0, Subclass0, instance1 );	// setup vtable.
+	instance1->INTERFACE_INSTANCE( Class0 ).property0 = 1;	// Access base class.
+	instance1->privateData = instance1;
+	instance1->someCounter = 2;
+
+	/* cast to interface */
+	Class0 * interfaceArray[ 2 ] = {
+		INTERFACE_CAST( Class0, &instance0 ),
+		INTERFACE_CAST( Class0, instance1 ),
+	};
+
+	/* use static methods */
+	printf( "name(): %s\n", CALL( Class0, name ) ); 
+
+	/* use virtual methods */
+	int index;
+	for( index = 0; index < 2; index++ ) {
+		printf( "instance: %d, method0(): %d\n", index, INVOKE( interfaceArray[ index ], method0 ) );
+	}
+
 	return 0;
 }
 

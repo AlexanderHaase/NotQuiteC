@@ -311,8 +311,8 @@ struct CatAnimal officeCat = {
  * formulation to allow for auto-generating code.
  */
 #define Animal__vtable_xmacro( EXPAND, ... )	\
-	DEFER( EXPAND( speak, ## __VA_ARGS__ ) )	\
-	DEFER( EXPAND( fiscalBurden, ## __VA_ARGS__ ) )
+	APPLY( EXPAND, speak, ## __VA_ARGS__ )	\
+	APPLY( EXPAND, fiscalBurden, ## __VA_ARGS__ )
 
 /** Property xmacro for Animal.
  *
@@ -324,10 +324,10 @@ struct CatAnimal officeCat = {
  *  - default: Currently unimplemented, but soon to be addressed.
  */
 #define Animal__property_xmacro( EXPAND, ... )	\
-	DEFER( EXPAND( float,	mass,		0,	## __VA_ARGS__ ) )	\
-	DEFER( EXPAND( float,	volume,		0,	## __VA_ARGS__ ) )	\
-	DEFER( EXPAND( float,	surfaceArea, 	0,	## __VA_ARGS__ ) )	\
-	DEFER( EXPAND( const char *, name, 	NULL,	## __VA_ARGS__ ) )
+	APPLY( EXPAND, float,	mass,		0,	## __VA_ARGS__ )	\
+	APPLY( EXPAND, float,	volume,		0,	## __VA_ARGS__ )	\
+	APPLY( EXPAND, float,	surfaceArea, 	0,	## __VA_ARGS__ )	\
+	APPLY( EXPAND, const char *, name, 	NULL,	## __VA_ARGS__ )
 
 /** Animal interface.
  *

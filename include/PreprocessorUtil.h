@@ -30,10 +30,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ******************************************************************************/
 
+// MSVC handling of __VA_ARGS__: http://stackoverflow.com/questions/2575864/the-problem-about-different-treatment-to-va-args-when-using-vs-2008-and-gcc
 #pragma once
 #define DEFER( ... ) __VA_ARGS__
+#define APPLY( FN, ... ) DEFER( FN( __VA_ARGS__ ) )
 #define STR_IMPL( value ) #value
 #define STR( value )	STR_IMPL( value )
+#define WSTR( value )	CAT2( L, STR_IMPL( value ) )
 #define CAT2_IMPL( _a_, _b_ ) _a_ ## _b_
 #define CAT2( _a_, _b_ ) CAT2_IMPL( _a_, _b_ )
 #define CAT3_IMPL( _a_, _b_, _c_ ) _a_ ## _b_ ## _c_

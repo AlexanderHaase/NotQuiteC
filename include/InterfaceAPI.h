@@ -97,6 +97,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *   DEFER( EXPAND( column0, column1, ..., ## __VA_ARGS__ ) )
  *
+ *   -- OR --
+ *
+ *   APPLY( EXPAND, column0, column1, ..., ## __VA_ARGS__ )
+ *
  * should be strictly followed, and columns must be supplied as dictated.
  */
 

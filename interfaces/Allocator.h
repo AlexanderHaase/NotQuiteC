@@ -1,4 +1,4 @@
-/* 
+/******************************************************************************
 
 Copyright (c) 2016, Alexander Haase
 All rights reserved.
@@ -28,7 +28,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/
+******************************************************************************/
 
 #pragma once
 #include "../include/InterfaceAPI.h"
@@ -64,12 +64,12 @@ typedef const char * CallTrace;
 
 /** Allocator vtable xmacro. */
 #define Allocator__vtable_xmacro( EXPAND, ... )	\
-	DEFER( EXPAND( allocate, ## __VA_ARGS__ ) )	\
-	DEFER( EXPAND( free, ## __VA_ARGS__ ) )
+	APPLY( EXPAND, allocate, ## __VA_ARGS__ )	\
+	APPLY( EXPAND, free, ## __VA_ARGS__ )
 
 /** Allocator property xmacro. */
 #define Allocator__property_xmacro( EXPAND, ... )	\
-	DEFER( EXPAND( const char *, name, NULL, ## __VA_ARGS__ ) )
+	APPLY( EXPAND, const char *, name, NULL, ## __VA_ARGS__ )
 
 /** Mutex Factory interface. 
  *

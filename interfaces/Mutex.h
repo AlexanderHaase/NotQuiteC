@@ -1,4 +1,4 @@
-/* 
+/******************************************************************************
 
 Copyright (c) 2016, Alexander Haase
 All rights reserved.
@@ -28,7 +28,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/
+******************************************************************************/
 
 #pragma once
 #include "../include/InterfaceAPI.h"
@@ -57,12 +57,12 @@ INTERFACE_DECLARE( Mutex );
 
 /** Factory vtable xmacro. */
 #define MutexFactory__vtable_xmacro( EXPAND, ... )	\
-	DEFER( EXPAND( create, ## __VA_ARGS__ ) )	\
-	DEFER( EXPAND( remove, ## __VA_ARGS__ ) )
+	APPLY( EXPAND, create, ## __VA_ARGS__ )	\
+	APPLY( EXPAND, remove, ## __VA_ARGS__ )
 
 /** Factory property xmacro. */
 #define MutexFactory__property_xmacro( EXPAND, ... )	\
-	DEFER( EXPAND( const char *, name, NULL, ## __VA_ARGS__ ) )
+	APPLY( EXPAND, const char *, name, NULL, ## __VA_ARGS__ )
 
 /** Mutex Factory interface. 
  *
@@ -92,12 +92,12 @@ INTERFACE_DEFINE( MutexFactory );
 
 /** Mutex interface vtable. */
 #define Mutex__vtable_xmacro( EXPAND, ... )	\
-	DEFER( EXPAND( acquire, ## __VA_ARGS__ ) )	\
-	DEFER( EXPAND( release, ## __VA_ARGS__ ) )
+	APPLY( EXPAND, acquire, ## __VA_ARGS__ )	\
+	APPLY( EXPAND, release, ## __VA_ARGS__ )
 
 /** Properties for Mutex interface. */
 #define Mutex__property_xmacro( EXPAND, ... )	\
-	DEFER( EXPAND( MutexFactory * restrict, factory, NULL, ## __VA_ARGS__ ) )
+	APPLY( EXPAND, MutexFactory * restrict, factory, NULL, ## __VA_ARGS__ )
 
 /** Mutex interface.
  *
