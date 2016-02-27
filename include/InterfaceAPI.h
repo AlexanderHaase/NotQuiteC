@@ -238,6 +238,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** Macro for naming and defining the signature of a interface method 
  * implementation.
  *
+ * BROKEN!
+ *
  * Uniform naming allows other macros to locate the method and automate
  * boilerplate. Defines a pointer that must be initialized. Pointer value will
  * propagate to implementation vtable.
@@ -248,11 +250,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * @param method to be implemented--lookup for signature.
  * @param implementation name of implementation.
  */
+/*
 #define INTERFACE_IMPLEMENT_METHOD_POINTER( interface, implementation, method ) \
 	INTERFACE_METHOD_SIGNATURE( interface, method )( * const restrict INTERFACE_METHOD_NAME( implementation, method ) )
+*/
+
 
 /** Macro for naming and defining the signature of a interface method 
  * implementation.
+ *
+ * BROKEN! Closest is #define IMPLEMENTATION__method_METHOD SOURCE__method_METHOD
  *
  * Uniform naming allows other macros to locate the method and automate
  * boilerplate. Borrows the implementation from the other class.
@@ -264,10 +271,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * @param implementation name of implementation.
  * @param source name of implementation to inherit.
  */
+/*
 #define INTERFACE_IMPLEMENT_METHOD_INHERIT( interface, implementation, method, source ) \
 	extern INTERFACE_IMPLEMENT_METHOD( interface, source, method );	\
 	INTERFACE_IMPLEMENT_METHOD_POINTER( interface, method, implementation ) = \
-		INTERFACE_METHOD_NAME( source, method );
+		INTERFACE_METHOD_NAME( source, method )
+*/
 
 /** Converts an interface xmacro to a vtable initializer for an implementation.
  *
@@ -284,7 +293,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * @param interface defining vtable.
  * @param implementation.
  */
-#define INTERFACE_VTABLE_IMPLEMENT( interface, implementation )	\
+#define INTERFACE_IMPLEMENT_VTABLE( interface, implementation )	\
 	const struct INTERFACE_VTABLE_NAME( interface ) INTERFACE_VTABLE_NAME( implementation ) = {	\
 		INTERFACE_VTABLE_XMACRO( interface )( EXPAND_AS_VTABLE_INIT, implementation )	\
 	}
@@ -298,7 +307,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #define INTERFACE_IMPLEMENT( interface, implementation )	\
 	INTERFACE_VTABLE_XMACRO( interface )( EXPAND_VTABLE_AS_DECLARATIONS, interface, implementation )	\
-	INTERFACE_VTABLE_IMPLEMENT( interface, implementation )
+	INTERFACE_IMPLEMENT_VTABLE( interface, implementation )
 
 /** Name for an inherited interface within a containing object. */
 #define INTERFACE_INSTANCE( interface )	\
